@@ -68,14 +68,29 @@ mat4.identity(rotateMat);
 mat4.rotate(rotateMat, Math.PI*0.5, [1.0/Math.sqrt(2),Math.sqrt(3)*0.5,-0.5]);
 generatorRotations.push(rotateMat);
 
-rotateMat = mat4.create();
-mat4.identity(rotateMat);
-mat4.rotate(rotateMat, Math.PI*0.5, [1.0/Math.sqrt(2),-Math.sqrt(3)*0.5,-0.5]);
-generatorRotations.push(rotateMat);
-
 addMatsFromMat(myMat);
 console.log("octohedron: " + rotationStack.length);
 
+//tetrahedron
+rotationStack=[];
+generatorRotations = [];
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.6666, [1.0/Math.sqrt(8),0,1]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.6666, [1.0/Math.sqrt(8),Math.sqrt(3)*0.5,-0.5]);
+generatorRotations.push(rotateMat);
+
+addMatsFromMat(myMat);
+console.log("tetrahedron: " + rotationStack.length);
+
+//icosohedron
+
+//dodecahedron
 
 function addMatsFromMat(thisMat){
 	//console.log("trying to add mat");
