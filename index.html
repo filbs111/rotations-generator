@@ -1,0 +1,111 @@
+<html>
+<head>
+<script type="text/javascript" src="lib/gl-matrix-min.js"></script>
+<script type="text/javascript">
+//for 3-sphere explorer game,
+//want to generate set of SO4 rotation matrices (or something that maps to rotation matrices) describing cells in different polytopes
+//ie 5,8,16,24,120,600-cell, so can make a 3d object for each cell, and rotate into place 
+
+//there may be some elegant way to do this, but as long as get workable result in reasonable time, doesn't really matter.
+//idea: input a set of matrices to rotate to nearest neighbours.
+//starting from identity matrix, apply one of these rotations. get a new rotation. for each new rotation, check whether its "centre" (som chosen direction - eg "up" vector) already exists in a set of stored rotation matrices. check can be dot product, and have some tolerance about 1.
+//if doesn't clash with an existing rotation, store the new rotation, and iterate from this new rotation.
+//this method can be tested with 3d rotations, and can check that produces the expected number of results (eg 6 for a cube, 8 for an octohedron etc.)
+
+//if this computation takes significant time (eg 600 cell), maybe worthwhile to store a tree of rotations to generate all rotation matrices,
+//alternatively, just store all rotation matrices in json. however, this may be very large.
+
+//TODO:
+//3d rotations : tetrahedron (4), cube (6), octohedron (8), dodecahedron (12), icosohedron (20)
+//4d rotations : 5, 8, 16, 24, 120, 600-cell
+
+
+var rotationStack=[];
+
+//make a 90 degree rotation matrix
+var rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.5, [0,1,0]);
+
+console.log("..");
+
+var myMat = mat4.create();
+mat4.identity(myMat);
+addMatsFromMat(myMat);
+addMatsFromMat(myMat);	//rejects repeat addition as expected
+
+//rotate by rotateMat and try to add again.
+mat4.multiply(myMat, rotateMat);
+addMatsFromMat(myMat);	//indeed gets added ok
+mat4.multiply(myMat, rotateMat);
+addMatsFromMat(myMat);	//indeed gets added ok
+mat4.multiply(myMat, rotateMat);
+addMatsFromMat(myMat);	//indeed gets added ok
+mat4.multiply(myMat, rotateMat);
+addMatsFromMat(myMat);	//rejected as expected (comes full circle)
+
+console.log(rotationStack);
+
+
+
+function addMatsFromMat(thisMat){
+	console.log("trying to add mat");
+
+	//for an input matrix, if something "equivalent" is not already on the rotationStack (same up vector):
+	//add it, and call addMatsFromMat for all matrices that can be rotated to from it.
+	
+	//step 1: identify if is already on stack.
+	var isCovered = false;
+	
+	var thisMatUpVec = [
+			thisMat[0], 
+			thisMat[1],
+			thisMat[2]
+		];
+
+	
+	for (var ii=0;ii<rotationStack.length;ii++){
+		var thatMat = rotationStack[ii];
+		var thatMatUpVec = [	//note could use column instead of row i guess - 0,4,8?
+			thatMat[0], 
+			thatMat[1],
+			thatMat[2]
+		];	//TODO maybe precalc this, or use matrix library better (update to newer version??)
+		var dotProd = thatMatUpVec[0]*thisMatUpVec[0]+
+					thatMatUpVec[1]*thisMatUpVec[1]+
+					thatMatUpVec[2]*thisMatUpVec[2];
+		if ((dotProd <1.01) && (dotProd>0.99)){
+			console.log("already covered");
+			isCovered=true;
+			break;
+		}else{
+			console.log("this one doesn't match. dotProd = " + dotProd);
+		}
+	}
+	
+	if (isCovered==false){
+		console.log("not yet covered. will add");
+		//push a copy of myMat to the stack for safety (so don't mess around with it by mistake later)
+		var newMat = mat4.create();
+		mat4.set(thisMat,newMat);
+		rotationStack.push(newMat);
+	}
+	
+
+}
+
+
+function init(){
+	console.log("called init");
+}
+
+
+</script>
+</head>
+
+<body onload="init()">
+
+
+</body>
+
+</html>
