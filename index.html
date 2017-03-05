@@ -20,12 +20,15 @@
 //4d rotations : 5, 8, 16, 24, 120, 600-cell
 
 
-var rotationStack=[];
+var rotationStack;
+var generatorRotations;
+var rotateMat;
 
-var generatorRotations = [];
+
+rotationStack=[];
+generatorRotations = [];
 
 //make a 90 degree rotation matrix
-var rotateMat;
 
 rotateMat = mat4.create();
 mat4.identity(rotateMat);
@@ -47,12 +50,35 @@ var myMat = mat4.create();
 mat4.identity(myMat);
 addMatsFromMat(myMat);
 
-console.log(rotationStack);
+console.log("cube: " + rotationStack.length);
 
+//octohedron
+//take one face of octohedron, with centre in "up" direction. rotations can be a quarter rotation about axes through each of 3 corners.
+
+rotationStack=[];
+generatorRotations = [];
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.5, [1.0/Math.sqrt(2),0,1]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.5, [1.0/Math.sqrt(2),Math.sqrt(3)*0.5,-0.5]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.5, [1.0/Math.sqrt(2),-Math.sqrt(3)*0.5,-0.5]);
+generatorRotations.push(rotateMat);
+
+addMatsFromMat(myMat);
+console.log("octohedron: " + rotationStack.length);
 
 
 function addMatsFromMat(thisMat){
-	console.log("trying to add mat");
+	//console.log("trying to add mat");
 
 	//for an input matrix, if something "equivalent" is not already on the rotationStack (same up vector):
 	//add it, and call addMatsFromMat for all matrices that can be rotated to from it.
@@ -78,7 +104,7 @@ function addMatsFromMat(thisMat){
 					thatMatUpVec[1]*thisMatUpVec[1]+
 					thatMatUpVec[2]*thisMatUpVec[2];
 		if ((dotProd <1.01) && (dotProd>0.99)){
-			console.log("already covered");
+	//		console.log("already covered");
 			isCovered=true;
 			break;
 		}else{
