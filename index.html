@@ -89,6 +89,29 @@ addMatsFromMat(myMat);
 console.log("tetrahedron: " + rotationStack.length);
 
 //icosohedron
+rotationStack=[];
+generatorRotations = [];
+
+var hackNum = Math.sqrt((5+2*Math.sqrt(5))/(10-2*Math.sqrt(5)));
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.4, [hackNum,0,1]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.4, [hackNum,Math.sqrt(3)*0.5,-0.5]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.4, [hackNum,-Math.sqrt(3)*0.5,-0.5]);
+generatorRotations.push(rotateMat);
+
+addMatsFromMat(myMat);
+console.log("icosohedron: " + rotationStack.length);
+
 
 //dodecahedron
 
@@ -118,7 +141,7 @@ function addMatsFromMat(thisMat){
 		var dotProd = thatMatUpVec[0]*thisMatUpVec[0]+
 					thatMatUpVec[1]*thisMatUpVec[1]+
 					thatMatUpVec[2]*thisMatUpVec[2];
-		if ((dotProd <1.01) && (dotProd>0.99)){
+		if ((dotProd <1.0001) && (dotProd>0.9999)){
 	//		console.log("already covered");
 			isCovered=true;
 			break;
