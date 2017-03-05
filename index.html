@@ -22,27 +22,30 @@
 
 var rotationStack=[];
 
+var generatorRotations = [];
+
 //make a 90 degree rotation matrix
-var rotateMat = mat4.create();
+var rotateMat;
+
+rotateMat = mat4.create();
 mat4.identity(rotateMat);
 mat4.rotate(rotateMat, Math.PI*0.5, [0,1,0]);
+generatorRotations.push(rotateMat);
 
-console.log("..");
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.5, [0,0,1]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, -Math.PI*0.5, [0,0,1]);
+generatorRotations.push(rotateMat);
+
 
 var myMat = mat4.create();
 mat4.identity(myMat);
 addMatsFromMat(myMat);
-addMatsFromMat(myMat);	//rejects repeat addition as expected
-
-//rotate by rotateMat and try to add again.
-mat4.multiply(myMat, rotateMat);
-addMatsFromMat(myMat);	//indeed gets added ok
-mat4.multiply(myMat, rotateMat);
-addMatsFromMat(myMat);	//indeed gets added ok
-mat4.multiply(myMat, rotateMat);
-addMatsFromMat(myMat);	//indeed gets added ok
-mat4.multiply(myMat, rotateMat);
-addMatsFromMat(myMat);	//rejected as expected (comes full circle)
 
 console.log(rotationStack);
 
@@ -79,16 +82,24 @@ function addMatsFromMat(thisMat){
 			isCovered=true;
 			break;
 		}else{
-			console.log("this one doesn't match. dotProd = " + dotProd);
+		//	console.log("this one doesn't match. dotProd = " + dotProd);
 		}
 	}
 	
 	if (isCovered==false){
 		console.log("not yet covered. will add");
-		//push a copy of myMat to the stack for safety (so don't mess around with it by mistake later)
-		var newMat = mat4.create();
-		mat4.set(thisMat,newMat);
-		rotationStack.push(newMat);
+		rotationStack.push(thisMat);
+		var newMat; 
+
+		for (var gg=0;gg<generatorRotations.length;gg++){
+			var thisG = generatorRotations[gg];
+			newMat = mat4.create();
+			mat4.set(thisMat,newMat);
+			mat4.multiply(newMat, thisG);
+			
+			addMatsFromMat(newMat);
+		}
+		
 	}
 	
 
