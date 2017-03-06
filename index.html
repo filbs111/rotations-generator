@@ -106,14 +106,36 @@ generatorRotations.push(rotateMat);
 
 rotateMat = mat4.create();
 mat4.identity(rotateMat);
-mat4.rotate(rotateMat, Math.PI*0.4, [hackNum,-Math.sqrt(3)*0.5,-0.5]);
+mat4.rotate(rotateMat, Math.PI*0.4, [hackNum,- Math.sqrt(3)*0.5,-0.5]);
 generatorRotations.push(rotateMat);
 
 addMatsFromMat(myMat);
-console.log("icosohedron: " + rotationStack.length);
+console.log("icosahedron: " + rotationStack.length);
 
 
 //dodecahedron
+rotationStack=[];
+generatorRotations = [];
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.6666, [hackNum,0,1]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.6666, [hackNum,Math.sin(Math.PI*0.4),Math.cos(Math.PI*0.4)]);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+mat4.rotate(rotateMat, Math.PI*0.6666, [hackNum,-Math.sin(Math.PI*0.4),Math.cos(Math.PI*0.4)]);
+generatorRotations.push(rotateMat);
+
+addMatsFromMat(myMat);
+console.log("dodecahedron: " + rotationStack.length);
+
+
 
 function addMatsFromMat(thisMat){
 	//console.log("trying to add mat");
