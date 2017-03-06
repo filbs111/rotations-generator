@@ -1,6 +1,9 @@
+<!DOCTYPE HTML>
 <html>
 <head>
+<meta charset="UTF-8">
 <script type="text/javascript" src="lib/gl-matrix-min.js"></script>
+<script type="text/javascript" src="utils/matfuncs.js"></script>
 <script type="text/javascript">
 //for 3-sphere explorer game,
 //want to generate set of SO4 rotation matrices (or something that maps to rotation matrices) describing cells in different polytopes
@@ -135,6 +138,29 @@ generatorRotations.push(rotateMat);
 addMatsFromMat(myMat);
 console.log("dodecahedron: " + rotationStack.length);
 
+//4D ROTATIONS
+
+//8-cell (tesseract) - should be easiest.
+rotationStack=[];
+generatorRotations = [];
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+xmove4mat(rotateMat, Math.PI*0.5);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+ymove4mat(rotateMat, Math.PI*0.5);
+generatorRotations.push(rotateMat);
+
+rotateMat = mat4.create();
+mat4.identity(rotateMat);
+zmove4mat(rotateMat, Math.PI*0.5);
+generatorRotations.push(rotateMat);
+
+addMatsFromMat(myMat);
+console.log("8-cell: " + rotationStack.length);
 
 
 function addMatsFromMat(thisMat){
@@ -148,21 +174,25 @@ function addMatsFromMat(thisMat){
 	
 	var thisMatUpVec = [
 			thisMat[0], 
-			thisMat[1],
-			thisMat[2]
+			thisMat[4],
+			thisMat[8],
+			thisMat[12]
 		];
 
 	
 	for (var ii=0;ii<rotationStack.length;ii++){
 		var thatMat = rotationStack[ii];
-		var thatMatUpVec = [	//note could use column instead of row i guess - 0,4,8?
+		var thatMatUpVec = [
 			thatMat[0], 
-			thatMat[1],
-			thatMat[2]
+			thatMat[4],
+			thatMat[8],
+			thatMat[12]
+			
 		];	//TODO maybe precalc this, or use matrix library better (update to newer version??)
 		var dotProd = thatMatUpVec[0]*thisMatUpVec[0]+
 					thatMatUpVec[1]*thisMatUpVec[1]+
-					thatMatUpVec[2]*thisMatUpVec[2];
+					thatMatUpVec[2]*thisMatUpVec[2]+
+					thatMatUpVec[3]*thisMatUpVec[3];
 		if ((dotProd <1.0001) && (dotProd>0.9999)){
 	//		console.log("already covered");
 			isCovered=true;
